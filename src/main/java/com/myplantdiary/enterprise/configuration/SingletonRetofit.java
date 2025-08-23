@@ -1,4 +1,4 @@
-package com.myplantdiary.enterprise.service.configuratiom;
+package com.myplantdiary.enterprise.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -14,8 +14,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+
 
 @SpringBootTest
+@ActiveProfiles("test")
+//@TestPropertySource(locations = "classpath:application-test.properties")
 class EnterpriseApplicationTests {
 
     @MockBean

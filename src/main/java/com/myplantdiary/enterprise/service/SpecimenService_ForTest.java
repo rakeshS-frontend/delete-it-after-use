@@ -10,27 +10,22 @@ package com.myplantdiary.enterprise.service;
 //import org.springframework.cache.annotation.CacheEvict;
 //import org.springframework.cache.annotation.Cacheable;
 
-import com.myplantdiary.enterprise.dao.ISpecimenDAO;
+import com.myplantdiary.enterprise.dao.DummySpecimenDao;
 import com.myplantdiary.enterprise.dto.Specimen;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-//import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-@Profile("!test")
-public class SpecimenService implements ISpecimenService {
+@Profile("test")
+public class SpecimenService_ForTest implements ISpecimenService {
 
-    private ISpecimenDAO specimenDAO;
+    private DummySpecimenDao specimenDAO;
     @Override
     public Specimen findById(int s) {
         Specimen speimen = specimenDAO.findById(s).orElse(null);

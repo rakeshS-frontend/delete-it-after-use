@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.*;
 //
 //import java.io.IOException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -36,12 +38,10 @@ public class PlantDiaryController {
     public String indexPage(Model model) {
         Specimen specimen = Specimen.builder().plantId(84).specimenId(103)
                 .latitude("39.74").longitude("-84.51").description("Pawpaw fruit season").build();
-//        specimen.description("Pawpaw fruit season");
-
-
         model.addAttribute(specimen);
         return "start";
     }
+
     @GetMapping("/specimen")
     public ResponseEntity<List<Specimen>> fetchAllSpecimen(){
         List<Specimen> specimenList = specimenService.findAllSpecimen();
@@ -54,7 +54,6 @@ public class PlantDiaryController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     @GetMapping("/specimen/{id}")
@@ -92,7 +91,7 @@ public class PlantDiaryController {
 
     }
 
-    @GetMapping(value = "/allPlants",
+    @GetMapping(value = "/plants",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Plants>> fetchAllPlants() throws IOException {
@@ -109,15 +108,38 @@ public class PlantDiaryController {
        }
     }
 
-    @GetMapping(value = "/allPlants")
+    @GetMapping(value = "/plants")
     public String fetchAllPlantsForm(@RequestParam(value = "searchTerm",required = false)String searchTerm, Model model) throws IOException {
         try {
             List<Plants> plantsList = plantRetrofitService.lookUpPlants();
+            if (searchTerm != null) {
+                plantsList = plantsList.parallelStream().filter(p->p.getCommon().contains(searchTerm) || p.getGenus().contains(searchTerm)).toList();
+            }
             model.addAttribute("plants",plantsList);
             return "plants";
         }catch (Exception e){
             return "error";
         }
     }
+
+    @GetMapping(value = "/plantNamesAutocomplete",produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<String> autoSuggestions(@RequestParam(required = false) String term){
+        List<String> suggestions = new ArrayList<>();
+        try {
+            List<Plants> plantsList = plantRetrofitService.lookUpPlants();
+            if (term != null) {
+                suggestions = plantsList.parallelStream().filter(p->p.getCommon().contains(term) || p.getGenus().contains(term))
+                        .map(Plants::getCommon)
+                        .toList();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return suggestions;
+    }
+
+    @GetMapping("/sustainability")
+    public String sustainability(){ return "sustainability"; }
 
 }
